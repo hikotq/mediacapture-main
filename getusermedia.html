@@ -12,8 +12,7 @@
     <a href="https://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and <a rel="license" href="https://www.w3.org/Consortium/Legal/2015/copyright-software-and-document">permissive document license</a> rules
     apply.
   <section id="abstract">
-    <p>This document defines a set of JavaScript APIs that allow local media,
-    including audio and video, to be requested from a platform.</p>
+    <p>この文書は、プラットフォームからオーディオやビデオをなどのローカルメディアを利用可能にする一連の JavaScript API を定義するものです。</p>
   </section>
   <section id="sotd">
     <p>This document is not complete. The API is based on preliminary work done in the
@@ -22,141 +21,90 @@
   </section>
   <section class="informative" id="intro">
     <h2>Introduction</h2>
-    <p>This document defines APIs for requesting access to local multimedia
-    devices, such as microphones or video cameras.</p>
-    <p>This document also defines the MediaStream API, which provides the means
-    to control where multimedia stream data is consumed, and provides some
-    control over the devices that produce the media. It also exposes
-    information about devices able to capture and render media.</p>
+    <p>本書は、マイクやビデオカメラのようなローカルマルチメディアデバイスへのアクセスを要求するためのAPIを定義します</p>
+    <p>また、この文書ではMediaStream API を定義します。このAPIはマルチメディアストリームのデータが消費される場所を制御する
+      手段を提供し、メディアを生成するデバイスをある程度制御できるようにするものです。
+      また、メディアをキャプチャしてレンダリングすることができるデバイスに関する情報を提供します。</p>
   </section>
   <section id="conformance">
-    <p>This specification defines conformance criteria that apply to a single
-    product: the <dfn>User Agent</dfn> that implements the interfaces that it
-    contains.</p>
-    <p>Conformance requirements phrased as algorithms or specific steps may be
-    implemented in any manner, so long as the end result is equivalent. (In
-    particular, the algorithms defined in this specification are intended to be
-    easy to follow, and not intended to be performant.)</p>
-    <p>Implementations that use ECMAScript [[ECMA-262]] to implement the APIs
-    defined in this specification must implement them in a manner consistent
-    with the ECMAScript Bindings defined in the Web IDL specification
-    [[WEBIDL]], as this specification uses that specification and
-    terminology.</p>
+    <p>この仕様は、単一の製品に適用される適合性基準を定義する。
+    すなわち、この仕様に含まれるインターフェイスを実装する<dfn>User-Agent</dfn>である。</p>
+    <p>アルゴリズムや特定の手順で表現された適合性要件は、最終結果が同等であれば、どのような方法で実装してもよいです。
+    (特に、本仕様で定義されたアルゴリズムは、簡単な操作を意図しており、性能を意図したものではありません。)</p>
+    <p>ECMAScript [[ECMA-262]] を用いて本仕様で定義された API を実装する場合、ECMAScript と整合性のある
+    方法で実装する必要があります。Web IDL 仕様 [[WEBIDL]] で定義されたバインディングは、
+    この仕様ではその仕様と用語を使用しているため、この仕様で定義されたバインディングを実装する必要があります。</p>
   </section>
   <section>
     <h2>Terminology</h2>
     <dl>
       <dt><dfn data-export>source</dfn></dt>
       <dd>
-        <p>A source is the "thing" providing the source of a media stream
-        track. The source is the broadcaster of the media itself. A source can
-        be a physical webcam, microphone, local video or audio file from the
-        user's hard drive, network resource, or static image. Note that this
-        document describes the use of microphone and camera type sources only,
-        the use of other source types is described in other documents.</p>
-        <p>An application that has no prior authorization regarding sources is
-        only given the number of available sources, their type and any
-        relationship to other devices. Additional information about sources can
-        become available when applications are authorized to use a source (see
+        <p>sourceとは、メディアストリームトラックのsourceを提供する「もの」のことです。
+        sourceは、メディアのブロードキャスターそのものです。ソースには、物理的なウェブカメラ、マイク、ユーザーの
+        ハードドライブにあるローカルビデオまたはオーディオファイル、ネットワークリソース、または静止画像を使用できます。
+        なお、この 本書では、マイクとカメラタイプのソースの使用方法のみを説明します。
+        他の種類のソースの使用方法については、他のドキュメントで説明されています。</p>
+        <p>ソースに関する事前の承認がないアプリケーションには、利用可能なソースの数、タイプ、および他のデバイスとの関係のみが与えられます。
+        ソースに関する追加情報は、アプリケーションがソースの使用を許可されたときに利用可能になります。 (see
         <a href="#access-control-model"></a>).</p>
-        <p>Sources <strong>do not</strong> have constraints — tracks have
-        constraints. When a source is connected to a track, it must produce
-        media that conforms to the constraints present on that track, to that
-        track. Multiple tracks can be attached to the same source. [=User Agent=]
-        processing, such as downsampling, MAY be used to ensure that all tracks
-        have appropriate media.</p>
-        <p>Sources have constrainable properties which have
-        [=capabilities=] and [=settings=]
-        exposed on tracks. While the constrainable properties are "owned" by
-        the source, sources MAY be able to accomodate different demands at
-        once. For this reason, capabilities are common to any (multiple) tracks
-        that happen to be using the same source, whereas settings MAY differ
-        per track (e.g., if two different track objects bound to the same
-        source query capability and settings information, they will get back
-        the same capabilities, but may get different settings that are tailored
-        to satisfy their individual constraints).</p>
+        <p>ソースには<strong>制約がなく</strong>、トラックには制約があります。ソースがトラックに接続されている場合、そのトラックに存在する制約に適合するメディア
+        を、そのトラックに生成する必要があります。複数のトラックを同じソースに接続することができます。すべてのトラックが適切なメディアを
+        持つように、ダウンサンプリングなどの[=User-Agent=]処理が使用される場合があります。</p>
+        <p>sourceは制約可能なプロパティを持ち、その[=capabilities=]や[=settings=}はトラック上に公開されます。
+        制約可能なプロパティはsourceが「所有」していますが、sourceは一度に異なる要求を満たすことができるかもしれません。
+        このため、capabilityは同じソースを使用する（複数の）トラックで共通ですが、settingはトラックごとに異なってもかまいません（たとえば、同じsourceにバインド
+        された2つの異なるトラックオブジェクトがcapabilityとsettingの情報を照会すると、同じcapabilityが返されますが、
+        個々の制約を満たすために調整された異なるsettingを得る可能性もあります）。</p>
       </dd>
       <dt><dfn data-lt=settings>Setting</dfn> (Source Setting)</dt>
       <dd>
-        <p>A setting refers to the immediate, current
-        value of the source's constrainable properties. Settings are always
-        read-only.</p>
-        <p>A source conditions may dynamically change, such as when a camera
-        switches to a lower frame rate due to low light conditions. In these
-        cases the tracks related to the affected source might not satisfy the
-        set constraints any longer. The platform SHOULD try to minimize such
-        excursions as far as possible, but will continue to deliver media even
-        when a temporary or permanent condition exists that prevents satisfying
-        the constraints.</p>
-        <p>Although settings are a property of the source, they are only
-        exposed to the application through the tracks attached to the source.
-        This is exposed via the <a>ConstrainablePattern</a> interface.</p>
+        <p>先述したsettingは、sourceの制約可能なプロパティの現在の値を指します。settingは常に読み取り専用です。</p>
+        <p>光量が少ないためにカメラが低フレームレートに切り替わるなど、sourceの状態が動的に変化することがあります。
+        このような場合、影響を受けたsourceに関連するトラックは、設定された制約をもはや満たさないかもしれません。
+        プラットフォームは、そのような逸脱を可能な限り最小限に抑えるようにすべきですが、制約を満たすことができない
+        一時的または永久的な条件が存在する場合でも、メディアの配信を継続します。</p>
+        <p>settingはsourceのプロパティですが、アプリケーションにはsourceに接続されたトラックを通じてのみ公開されます。
+        これは、<a>ConstrainablePattern</a> インターフェースを通じて公開されます。</p>
       </dd>
       <dt><dfn data-lt=capabilities>Capability</dfn></dt>
       <dd>
-        <p>For each constrainable property, there is a capability that
-        describes whether it is supported by the source and if so, the range of
-        supported values. As with settings, capabilities are exposed to the
-        application via the <a>ConstrainablePattern</a> interface.</p>
-        <p>The values of the supported capabilities must be normalized to the
-        ranges and enumerated types defined in this specification.</p>
-        <p>A {{MediaStreamTrack/getCapabilities()}} call on
-        a track returns the same underlying per-source capabilities for all
-        tracks connected to the source.</p>
-        <p>Source capabilities are effectively constant. Applications should be
-        able to depend on a specific source having the same capabilities for
-        any browsing session.</p>
-        <p>This API is intentionally simplified. Capabilities are not capable
-        of describing interactions between different values. For instance, it
-        is not possible to accurately describe the capabilities of a camera
-        that can produce a high resolution video stream at a low frame rate and
-        lower resolutions at a higher frame rate. Capabilities describe the
-        complete range of each value. Interactions between constraints are
-        exposed by attempting to apply constraints.</p>
+        <p>各制約可能プロパティには、sourceでサポートされているかどうか、
+        サポートされている場合はサポートされる値の範囲を記述するcapabilityがあります。
+        設定と同様に、capabilityは<a>ConstrainablePattern</a>インターフェースを介してアプリケーションに公開されます。</p>
+        <p>サポートされるcapabilityの値は、本仕様で定義される範囲と列挙型に正規化されていなければならない。</p>
+        <p>トラックで {{MediaStreamTrack/getCapabilities()}} を呼び出すと、ソースに接続されているすべてのトラックについて、
+        ソースごとの同じ基礎的な能力が返されます。</p>
+        <p>Source capabilitiesは事実上一定です。
+        アプリケーションはどのようなブラウジングセッションでも、同じcapabilityをもつ特定のsourceに依存することができます。</p>
+        <p>本APIは意図的に簡略化されています。Capabilities は、異なる値間の相互作用を記述することができない。例えば、
+        低フレームレートで高解像度のビデオストリームを生成し、高フレームレートで低解像度を生成することができる
+        カメラの能力を正確に記述することは不可能です。能力は各値の完全な範囲を記述します。制約間の相互作用
+        は、制約を適用しようとすることで明らかになります。</p>
       </dd>
       <dt><dfn>Constraint</dfn>s</dt>
       <dd>
-        <p>Constraints provide a general control surface that allows
-        applications to both select an appropriate source for a track and, once
-        selected, to influence how a source operates.</p>
-        <p>Constraints limit the range of operating modes that a source can use
-        when providing media for a track. Without provided track constraints,
-        implementations are free to select a source's settings from the full
-        ranges of its supported capabilities. Implementations may also adjust
-        source settings at any time within the bounds imposed by all applied
-        constraints.</p>
-        <p>{{MediaDevices/getUserMedia()}} uses constraints
-        to help select an appropriate source for a track and configure it.
-        Additionally, the <a>ConstrainablePattern</a> interface on tracks
-        includes an API for dynamically changing the track's constraints at any
-        later time.</p>
-        <p>A track will not be connected to a source using
-        {{MediaDevices/getUserMedia()}} if its initial constraints cannot be
-        satisfied. However, the ability to meet the constraints on a track can
-        change over time, and constraints can be changed. If circumstances
-        change such that constraints cannot be met, the
-        <a>ConstrainablePattern</a> interface defines an appropriate error to
-        inform the application. [[[#the-model-sources-sinks-constraints-and-settings]]] explains how
-        constraints interact in more detail.</p>
-        <p>For each constrainable property, a constraint exists whose name
-        corresponds with the relevant source setting name and capability
-        name.</p>
-        <p>A constraint falls into one of three groups, depending on its place
-        in the constraints structure. The groups are:</p>
+        <p>Constraintは、トラックに対して適切なソースを選択し、一度選択したソースの動作に影響を与えることができる
+        一般的なコントロールサーフェイスを提供します。</p>
+        <p>Constraintは、トラックにメディアを提供する際にソースが使用できる動作モードの範囲を制限します。提供されたトラック制約がなければ、
+        実装は、サポートされる能力の全範囲からソースの設定を自由に選択することができます。また、実装は適用されるすべての制約に
+        よって課される範囲内で、いつでもソースの設定を調整することができます。</p>
+        <p>{{MediaDevices/getUserMedia()}} は、constraintを使用して、トラックに適切なソースを選択し、設定するのに役立ちます。
+        さらに、トラックの<a>ConstrainablePattern</a>インターフェースには、後からいつでもトラックの制約を動的に変更するためのAPIが含まれています。</p>
+        <p>トラックは、その初期constraintを満たすことができない場合、{{MediaDevices/getUserMedia()}}を使用してソースに接続されることはないでしょう。
+        しかし、トラックの制約を満たす能力は時間の経過とともに変化し、constraintを変更することができます。
+        constraintが満たされないような状況の変化があった場合、<a>ConstrainablePattern</a>インタフェースはアプリケーションに通知するための適切なエラーを定義します。
+        [[[#the-model-sources-sinks-constraints-and-settings]] では、制約がどのように相互作用するかを詳しく説明しています。</p>
+        <p>制約可能な各プロパティに対して、関連するsource設定名とcapability名に対応する名前のconstraintが存在します。</p>
+        <p>制約は、制約構造におけるその位置によって、3つのグループのうちの1つに分類されます。そのグループとは</p>
         <ul>
-          <li><dfn>required constraints</dfn> are all <a data-lt=
-          "advanced constraints">non-advanced</a> constraints that are
-        <a>required</a>.</li>
-          <li><dfn>optional basic constraints</dfn> are the remaining
-        <a data-lt="advanced constraints">non-advanced</a> constraints.</li>
-          <li><dfn>advanced constraints</dfn> are all constraints specified
-        using the <code><a href="#dom-constraints-advanced">advanced</a></code>
-        keyword.</li>
+          <li><dfn>required constraints</dfn> は必須であるすべての<a data-lt="advanced constraints">non-advanced制約</a>である。</li>
+          <li><dfn>optional basic constraints</dfn>は、残りの<a data-lt="advanced constraints">non-advanced制約</a>である。</li>
+          <li><dfn>advanced constraints</dfn>とは、<code><a href="#dom-constraints-advanced">advanced</a></code>キーワードを
+          使用して指定されたすべての制約のことです。</li>
         </ul>
-        <p>In general, [=User Agents=] will have more flexibility to optimize the
-        media streaming experience the fewer constraints are applied, so
-        application authors are strongly encouraged to use <a>required
-        constraints</a> sparingly.</p>
+        <p>一般に、[=User Agents=]は適用される制約が少ないほど、メディアストリーミング体験を最適化する柔軟性を持つので、
+        アプリケーションの作者は<a>required constraints</a>を控えめに使用することを強く推奨されます。</p>
       </dd>
     </dl>
   </section>
@@ -164,57 +112,38 @@
     <h2>MediaStream API</h2>
     <section>
       <h2>Introduction</h2>
-      <p>The two main components in the MediaStream API are the
-      {{MediaStreamTrack}} and {{MediaStream}} interfaces. The
-      {{MediaStreamTrack}} object represents media of a single
-      type that originates from one media source in the [=User Agent=], e.g. video
-      produced by a web camera. A {{MediaStream}} is used to
-      group several {{MediaStreamTrack}} objects into one unit
-      that can be recorded or rendered in a media element.</p>
-      <p>Each {{MediaStream}} can contain zero or more
-      {{MediaStreamTrack}} objects. All tracks in a
-      {{MediaStream}} are intended to be synchronized when
-      rendered. This is not a hard requirement, since it might not be possible
-      to synchronize tracks from sources that have different clocks. Different
-      {{MediaStream}} objects do not need to be
-      synchronized.</p>
-      <p class="note">While the intent is to synchronize tracks, it could be
-      better in some circumstances to permit tracks to lose synchronization. In
-      particular, when tracks are remotely sourced and real-time [[?WEBRTC]],
-      it can be better to allow loss of synchronization than to accumulate
-      delays or risk glitches and other artifacts. Implementations are expected
-      to understand the implications of choices regarding synchronization of
-      playback and the effect that these have on user perception.</p>
-      <p>A single {{MediaStreamTrack}} can represent
-      multi-channel content, such as stereo or 5.1 audio or stereoscopic video,
-      where the channels have a well defined relationship to each other.
-      Information about channels might be exposed through other APIs, such as
-      [[?WEBAUDIO]], but this specification provides no direct access to
-      channels.</p>
-      <p>A {{MediaStream}} object has an input and an output
-      that represent the combined input and output of all the object's tracks.
-      The output of the {{MediaStream}} controls how the object
-      is rendered, e.g., what is saved if the object is recorded to a file or
-      what is displayed if the object is used in a [^video^] element.
-      A single {{MediaStream}} object can be attached to
-      multiple different outputs at the same time.</p>
-      <p>A new {{MediaStream}} object can be created from
-      existing media streams or tracks using the
-      {{MediaStream/MediaStream()}} constructor. The constructor argument
-      can either be an existing {{MediaStream}} object, in
-      which case all the tracks of the given stream are added to the new
-      {{MediaStream}} object, or an array of
-      {{MediaStreamTrack}} objects. The latter form makes it
-      possible to compose a stream from different source streams.</p>
-      <p>Both {{MediaStream}} and
-      {{MediaStreamTrack}} objects can be cloned. A cloned
-      {{MediaStream}} contains clones of all member tracks from
-      the original stream. A cloned {{MediaStreamTrack}} has a
-      <a href="#constrainable-interface">set of constraints</a> that is
-      independent of the instance it is cloned from, which allows media from
-      the same source to have different constraints applied for different
-      <a>consumer</a>s. The {{MediaStream}} object is also used in
-      contexts outside {{MediaDevices/getUserMedia}}, such as [[?WEBRTC]].</p>
+      <p>MediaStream APIの主要なコンポーネントは、{{MediaStreamTrack}}と{{MediaStream}}
+      インターフェースの2つです。{{MediaStreamTrack}}オブジェクトは、[=User Agent=]内の1つのメディアソースに
+      由来する単一タイプのメディアを表します（例：Webカメラで撮影した動画など）。
+      {{MediaStream}}は、複数の{{MediaStreamTrack}}オブジェクトを、メディア要素で記録または
+      レンダリングできる1つのユニットにまとめるために使用されます。</p>
+      <p>各{MediaStream}}は0個以上の{{MediaStreamTrack}}オブジェクトを含むことができます。
+      {{MediaStream}} 内のすべてのトラックは、レンダリング時に同期していることを意図しています。
+      これは難しい要件ではなく、異なるクロックを持つソースからのトラックを同期させることができない場合があるからです。
+      異なる {{MediaStream}} オブジェクトは同期させる必要はありません。</p>
+      <p class="note">トラックを同期させることを意図していますが、状況によっては、トラックが同期を
+      失うことを許可する方が良い場合もあります。特に、トラックがリモートから供給され、リアルタイム[[?WEBRTC]]で
+      ある場合、遅延を蓄積したり、グリッチやその他のアーティファクトのリスクを冒すよりも、
+      同期の喪失を許可する方がよい場合があります。実装には再生の同期に関する選択の意味と、
+      それがユーザーの知覚に与える影響を理解することが期待されています。</p>
+      <p>1つの{{MediaStreamTrack}}は、ステレオや5.1オーディオ、立体視映像などの
+      マルチチャンネルコンテンツを表現でき、チャンネル同士の関係が明確に定義されています。
+      チャンネルに関する情報は、[[?WEBAUDIO]]などの他のAPIを通じて公開されるかも
+      しれませんが、この仕様ではチャンネルへの直接アクセスは提供されません。</p>
+      <p>{{MediaStream}} オブジェクトは、オブジェクトの全トラックの入出力を組み合わせたものを表す入力と出力を持ちます。
+      {{MediaStream}} の出力は、オブジェクトのレンダリング方法を制御します。例えば、オブジェクトがファイルに記録されている
+      場合は何が保存されるか、オブジェクトが [^video^] 要素で使用されている場合は何が表示されるか、などです。1 つの
+      {{MediaStream}} オブジェクトを複数の異なる出力に同時にアタッチすることができます。</p>
+      <p>MediaStream/MediaStream()}}コンストラクタを使えば、既存のメディアストリームやトラック
+      から新しい{{MediaStream}}オブジェクトを作成することができます。コンストラクタの引数は
+      {{MediaStream}} オブジェクト、 {{MediaStreamTrack}} オブジェクトのどちらでもよく、{{MediaStream}} オブジェクトの
+      場合は与えられたストリームの全てのトラックは新しいオブジェクトに追加されます。
+      {{MediaStreamTrack}} オブジェクトの場合は異なるソースストリームからストリームを構成することが可能になります。</p>
+      <p>クローンされた{{MediaStream}}は、元のストリームの全メンバトラックのクローンを含みます。
+      クローンされた {{MediaStreamTrack}} は、クローン元のインスタンスとは独立した<a href="#constrainable-interface">constraintsのセット</a>を持つため、
+      同じソースからのメディアでも<a href="#dfn-consumer">消費者</a>ごとに異なるconstraintsを適用することができます。
+      </p>
+      <p>{{MediaStream}} オブジェクトは、{{MediaDevices/getUserMedia}} 以外のコンテキスト、例えば [[?WEBRTC]] でも使用されます。</p>
     </section>
     <section>
       <h2>{{MediaStream}}</h2>
