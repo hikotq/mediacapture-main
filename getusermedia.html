@@ -134,7 +134,7 @@
       {{MediaStream}} の出力は、オブジェクトのレンダリング方法を制御します。例えば、オブジェクトがファイルに記録されている
       場合は何が保存されるか、オブジェクトが [^video^] 要素で使用されている場合は何が表示されるか、などです。1 つの
       {{MediaStream}} オブジェクトを複数の異なる出力に同時にアタッチすることができます。</p>
-      <p>MediaStream/MediaStream()}}コンストラクタを使えば、既存のメディアストリームやトラック
+      <p>{{MediaStream/MediaStream()}}コンストラクタを使えば、既存のメディアストリームやトラック
       から新しい{{MediaStream}}オブジェクトを作成することができます。コンストラクタの引数は
       {{MediaStream}} オブジェクト、 {{MediaStreamTrack}} オブジェクトのどちらでもよく、{{MediaStream}} オブジェクトの
       場合は与えられたストリームの全てのトラックは新しいオブジェクトに追加されます。
@@ -148,131 +148,96 @@
     <section>
       <h2>{{MediaStream}}</h2>
       <p id=
-      "mediastream-constructor">The MediaStream <dfn data-idl data-dfn-for=MediaStream>constructor</dfn> composes a new
-      stream out of existing tracks. It takes an optional argument of type
-      {{MediaStream}} or an array of
-      {{MediaStreamTrack}} objects. When the constructor is invoked, the User
-      Agent must run the following steps:</p>
+      "mediastream-constructor"
+      >{{MediaStream}} <dfn data-idl data-dfn-for=MediaStream>constructor</dfn>は、既存のトラックから新しいストリームを構成します。オプションで
+      {{MediaStream}} 型の引数、または {{MediaStreamTrack}} オブジェクトの配列を受け取ります。
+      コンストラクタが呼び出されると、ユーザエージェントは以下のステップを実行する必要があります。</p>
       <ol>
         <li>
-          <p>Let <var>stream</var> be a newly constructed
-          {{MediaStream}} object.</p>
+          <p><var>stream</var>を新しく構築した {MediaStream}}オブジェクトです。</p>
         </li>
         <li>
-          <p>Initialize <var>stream</var>.{{MediaStream/id}}  attribute to a newly generated
-          value.</p>
+          <p><var>stream</var>.{{MediaStream/id}}属性を新規に生成した値で初期化します</p>
         </li>
         <li>
-          <p>If the constructor's argument is present, run the following
-          steps:</p>
+          <p>コンストラクタの引数が存在する場合は、以下の手順を実行します。</p>
           <ol>
             <li>
-              <p>Construct a set of tracks <var>tracks</var> based on the type
-              of argument:</p>
+              <p>引数の種類に応じて、トラックのセット<var>tracks</var>を構築する。</p>
               <ul>
                 <li>
                   <p>A {{MediaStream}} object:</p>
-                  <p>Let <var>tracks</var> be a set containing all the
-                  {{MediaStreamTrack}} objects in the
-                  {{MediaStream}} <a>track
-                  set</a>.</p>
+                  <p>{{MediaStream}} <a>track set</a>に含まれる全ての{{MediaStreamTrack}}オブジェクトを含むセットを<var>tracks</var>とする。</p>
                 </li>
                 <li>
                   <p>A sequence of {{MediaStreamTrack}}
                   objects:</p>
-                  <p>Let <var>tracks</var> be a set containing all the
-                  {{MediaStreamTrack}} objects in the provided
-                  sequence.</p>
+                  <p>与えられたシーケンスに含まれる全ての {{MediaStreamTrack}} オブジェクトを含むセットを<var>tracks</var>とします。</p>
                 </li>
               </ul>
             </li>
             <li>
-              <p>For each {{MediaStreamTrack}},
-              <var>track</var> , in <var>tracks</var>, run the following
-              steps:</p>
+              <p><var>tracks</var>内の各{{MediaStreamTrack}} <var>track</var>について、以下の手順を実行します。</p>
               <ol>
                 <li>
-                  <p>If <var>track</var> is already in <var>stream</var>'s
-                  [=track set=], skip
-                  <var>track</var>.</p>
+                  <p>
+                      <var>track</var>が<var>stream</var>'sの[=track set=]内にあった場合はスキップする。
+                  </p>
                 </li>
                 <li>
-                  <p>Otherwise, add <var>track</var> to <var>stream</var>'s
-                  [=track set=].</p>
+                  <p>それ以外の場合は, <var>track</var> を <var>stream</var>'s [=track set=] に追加する。</p>
                 </li>
               </ol>
             </li>
           </ol>
         </li>
         <li>
-          <p>Return <var>stream</var>.</p>
+          <p><var>stream</var>を返す。</p>
         </li>
       </ol>
-      <p>The tracks of a {{MediaStream}} are stored in a
-      <dfn class="export">track set</dfn>. The track set MUST contain the
-      {{MediaStreamTrack}} objects that correspond to the
-      tracks of the stream. The relative order of the tracks in the set is User
-      Agent defined and the API will never put any requirements on the order.
-      The proper way to find a specific {{MediaStreamTrack}}
-      object in the set is to look it up by its {{MediaStreamTrack/id}}.</p>
-      <p>An object that reads data from the output of a
-      {{MediaStream}} is referred to as a
-      {{MediaStream}} <dfn data-export data-for=MediaStream>consumer</dfn>. The list of
-      {{MediaStream}} consumers currently include media
-      elements (such as [^video^] and
-      [^audio^]) [[HTML]], Web Real-Time Communications
-      (WebRTC; {{RTCPeerConnection}}) [[?WEBRTC]], media recording
-      (<code class=fixme>MediaRecorder</code>) [[?mediastream-recording]], image capture
-      (<code class=fixme>ImageCapture</code>) [[?image-capture]], and web audio
-      ({{MediaStreamAudioSourceNode}}) [[?WEBAUDIO]].</p>
-      <p class="note">{{MediaStream}} consumers must be able to
-      handle tracks being added and removed. This behavior is specified per
-      consumer.</p>
-      <p>A {{MediaStream}} object is said to be <dfn data-dfn-for="stream" id=
-      "stream-active">active</dfn> when it has at least one
-      {{MediaStreamTrack}} that has not [= track/ended =]. A {{MediaStream}} that does not
-      have any tracks or only has tracks that are [= track/ended =]
-      is <dfn data-dfn-for="stream" id="stream-inactive">inactive</dfn>.</p>
-      <p>A {{MediaStream}} object is said to be <dfn data-dfn-for=stream id=
-      "stream-audible" data-dfn-for=stream>audible</dfn> when it has at least one
-      {{MediaStreamTrack}} whose {{MediaStreamTrack/[[Kind]]}} is <a>"audio"</a>
-      that has not [= track/ended =]. A {{MediaStream}} that does not have any
-      audio tracks or only has audio tracks that are [= track/ended =] is
-      <dfn id="stream-inaudible" data-dfn-for=stream>inaudible</dfn>.</p>
-      <p>The [=User Agent=] may update a {{MediaStream}}'s [=track set=] in response to, for example, an external
-      event. This specification does not specify any such cases, but other
-      specifications using the MediaStream API may. One such example is the
-      WebRTC 1.0 [[?WEBRTC]] specification where the [=track set=] of a {{MediaStream}}, received
-      from another peer, can be updated as a result of changes to the media
-      session.</p>
-      <p>To <dfn data-dfn-for="MediaStream">add a track</dfn> <var>track</var> to a
-      {{MediaStream}} <var>stream</var>, the [=User Agent=] MUST
-      run the following steps:</p>
+      <p> {{MediaStreamTrack}}のトラックは <dfn class="export">track set</dfn> に格納されます。
+      track set は stream の tracks に対応する {{MediaStreamTrack}} オブジェクトを含んでいなければなりません。
+      セット内のトラックの相対的な順序は、ユーザーエージェントが定義し、APIは順序にいかなる要件も課しません。
+      セット内の特定の{{MediaStreamTrack}}オブジェクトを見つけるには{{MediaStreamTrack/id}}を用います。
+      <p>{{MediaStream}}の出力からデータを読み出すオブジェクトを{{MediaStream}}<dfn data-export data-for=MediaStream>consumer</dfn>と呼びます。
+      現在、{{MediaStream}} consumer のリストには、メディア要素（[^video^] や [^audio^]など） [[HTML]] 、Web Real-Time Communications
+      (WebRTC; {{RTCPeerConnection}}) [[?WEBRTC]]、メディアレコーディング（<code class=fixme>MediaRecorder</code>）[[?mediastream-recording]]、画像キャプチャ
+      （<code class=fixme>ImageCapture</code>）[[?image-capture]]、Webオーディオ（ {{MediaStreamAudioSourceNode}}）[[?WEBAUDIO]] などがあります。</p>
+      <p class="note">{{MediaStream}} consumer は、track の追加と削除を処理できなければなりません。
+        この動作は consumer 毎に指定されます。</p>
+      <p>{{MediaStream}}オブジェクトは、[= track/ended =]でない{{MediaStreamTrack}}を少なくとも1つ持つとき、
+      <dnf data-dfn-for="stream" id="stream-active">active</dnf> であると言われます。トラックを持たない、または[= track/ended =]であるトラックのみを
+      持つ{{MediaStream}}は、<dfn data-dfn-for="stream" id="stream-inactive">inactive</dfn> となります。</p>
+      <p>{{MediaStream}}オブジェクトは、{{MediaStreamTrack/[[Kind]]}}が <a>"audio"</a> で、[= track/ended =] でない{{MediaStreamTrack}}を少なくとも一つ持つとき、
+      <dfn data-dfn-for=stream id= "stream-audible" data-dfn-for=stream>audible</dfn> であると言われます。
+      音声トラックを持たない{{MediaStream}}、または[= track/ended =]の音声トラックのみを持つ{{MediaStream}}は<dfn id="stream-inaudible" data-dfn-for=stream>inaudible</dfn> です。</p>
+      <p> [=User Agent=]は、例えば外部イベントに応じて{{MediaStream}}の[=track set=]を更新することができます。
+      本仕様ではそのようなケースを規定していませんが、MediaStream APIを使用する他の仕様ではそのようなケースも考えられます。
+      そのような例として、WebRTC 1.0 [[?WEBRTC]] 仕様では他のピアから受信した {{MediaStream}} の [=track set=]
+      が、メディアセッションの変更の結果として更新されることがあります。</p>
+      <p>{{MediaStream}} の <var>stream</var> に <var>track</var> を<dfn data-dfn-for="MediaStream" data-lt="add a track">追加する</dfn>には、[=User Agent=]は次の手順を実行しなければなりません（MUST）。</p>
       <ol>
         <li>
-          <p>If <var>track</var> is already in <var>stream's</var> [=track set=], then abort these steps.</p>
+          <p><var>track</var>が<var>stream's</var>の[=track set=]にすでにある場合は、この手順を中断します。</p>
         </li>
         <li>
-          <p>Add <var>track</var> to <var>stream</var>'s [=track set=].</p>
+          <p><var>stream</var>の[=track set=]に<var>track</var>を追加します。</p>
         </li>
         <li>
-          <p>[= Fire a track event=] named {{addtrack}} with
-          <var>track</var> at <var>stream</var>.</p>
+          <p><var>stream</var>の<var>track</var>と共に{{addtrack}}という名前の[= Fire a track event|トラックイベントを発生させる=]。</p>
         </li>
       </ol>
-      <p>To <dfn data-dfn-for="MediaStream">remove a track</dfn> <var>track</var> from a
-      {{MediaStream}} <var>stream</var>, the [=User Agent=] MUST
-      run the following steps:</p>
+      <p>{{MediaStream}}の <var>stream</var> から <var>track</var> を<dfn data-dfn-for="MediaStream" data-lt="remove a track">削除する</dfn>に
+      は、[=User Agent=]は以下の手順を実行しなければなりません（MUST）。</p>
       <ol>
         <li>
-          <p>If <var>track</var> is not in <var>stream's</var> [=track set=], then abort these steps.</p>
+          <p><var>track</var> が <var>stream's</var> の[=track set=]にない場合は、この手順を中止します。</p>
         </li>
         <li>
-          <p>[=MediaStream/Remove a track|Remove=] <var>track</var> from <var>stream</var>'s [=track set=].</p>
+          <p><var>steram</var>'s の [=track set=] から <var>track</var> を [=MediaStream/Remove a track|削除=]</p>
         </li>
         <li>
-          <p>[= Fire a track event =] named {{removetrack}} with
-          <var>track</var> at <var>stream</var>.</p>
+          <p><var>stream</var> の <var>track</var> を持つ {{removetrack}} という名前の[= Fire a track event|トラックイベントを発生させる =]。</p>
         </li>
       </ol>
       <div>
