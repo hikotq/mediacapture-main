@@ -206,7 +206,7 @@
       <p class="note">{{MediaStream}} consumer は、track の追加と削除を処理できなければなりません。
         この動作は consumer 毎に指定されます。</p>
       <p>{{MediaStream}}オブジェクトは、[= track/ended =]でない{{MediaStreamTrack}}を少なくとも1つ持つとき、
-      <dnf data-dfn-for="stream" id="stream-active">active</dnf> であると言われます。トラックを持たない、または[= track/ended =]であるトラックのみを
+      <dfn data-dfn-for="stream" id="stream-active">active</dfn> であると言われます。トラックを持たない、または[= track/ended =]であるトラックのみを
       持つ{{MediaStream}}は、<dfn data-dfn-for="stream" id="stream-inactive">inactive</dfn> となります。</p>
       <p>{{MediaStream}}オブジェクトは、{{MediaStreamTrack/[[Kind]]}}が <a>"audio"</a> で、[= track/ended =] でない{{MediaStreamTrack}}を少なくとも一つ持つとき、
       <dfn data-dfn-for=stream id= "stream-audible" data-dfn-for=stream>audible</dfn> であると言われます。
@@ -289,35 +289,29 @@ interface MediaStream : EventTarget {
           "attributes">
             <dt>{{id}} of type {{DOMString}}, readonly</dt>
             <dd>
-              <p>The <dfn data-idl>id</dfn> attribute MUST return the value to
-              which it was initialized when the object was created.</p>
-              <p>When a {{MediaStream}} is created, the User
-              Agent MUST generate an identifier string, and MUST initialize the
-              object's {{id}}
-              attribute to that string, unless the object is created as part of
-              a special purpose algorithm that specifies how the stream id must
-              be initialized. A good practice is to use a UUID [[rfc4122]],
-              which is 36 characters long in its canonical form. To avoid
-              fingerprinting, implementations SHOULD use the forms in section
-              4.4 or 4.5 of RFC 4122 when generating UUIDs.</p>
-              <p>An example of an algorithm that specifies how the stream id
-              must be initialized is the algorithm to associate an incoming
-              network component with a {{MediaStream}} object. [[?WEBRTC]]</p>
+              <p><dfn data-idl>id</dfn>属性は、オブジェクトの生成時に初期化された値を返さなければならない（MUST）。</p>
+              <p>{{MediaStream}} が生成されるとき、ユーザエージェントは識別子文字列を生成しなければならず、
+              オブジェクトの {{id}} 属性をその文字列に初期化しなければなりません（ただし、
+              stream ID の初期化方法を指定した特別な目的のアルゴリズムの一部としてオブジェクトが生成された
+              場合は除きます）。良い習慣は UUID [[rfc4122]] を使うことで、これはその標準的な形式で36文字の長さです。
+              フィンガープリントを避けるため、実装ではUUIDを生成するときにRFC 4122のセクション4.4または4.5の形式を使用するべきです(SHOULD)。
+              ストリームIDをどのように初期化しなければならないかを指定するアルゴリズムの例としては、受信するネットワークコンポーネントと{{MediaStream}}オブジェクトを
+              関連付けるアルゴリズムが挙げられます。[[?WEBRTC]]</p>
             </dd>
             <dt><dfn>active</dfn> of type {{boolean}}, readonly</dt>
             <dd>
-              <p>The {{active}} attribute MUST return
-              <code>true</code> if this {{MediaStream}} is
-              [= stream/active =] and <code>false</code>
-              otherwise.</p>
+              <p>{{active}} 属性は {{MediaStream}} が [= stream/active =] の場合は<code>true</code>
+                を、そうでない場合は <code>false</code> を返さなければなりません。
             </dd>
-            <dt><dfn>onaddtrack</dfn> of type {{EventHandler}}</dt>
+            <dt>
+              <dfn>onaddtrack</dfn> of type {{EventHandler}}</dt>
             <dd>
+              <p>このイベントハンドラのイベントタイプは、{{addtrack}} です。</p>
               <p>The event type of this event handler is {{addtrack}}.</p>
             </dd>
             <dt><dfn>onremovetrack</dfn> of type {{EventHandler}}</dt>
             <dd>
-              <p>The event type of this event handler is {{removetrack}}.</p>
+              <p>このイベントハンドラのイベントタイプは、{{removetrack}} です。</p>
             </dd>
           </dl>
         </section>
@@ -327,113 +321,79 @@ interface MediaStream : EventTarget {
           "methods">
             <dt><dfn>getAudioTracks()</dfn></dt>
             <dd>
-              <p>Returns a sequence of {{MediaStreamTrack}}
-              objects representing the audio tracks in this stream.</p>
-              <p>The {{getAudioTracks}}
-              method MUST return a sequence that represents a snapshot of all
-              the {{MediaStreamTrack}} objects in this stream's
-              [=track set=] whose {{MediaStreamTrack/[[Kind]]}} is equal to
-              <a>"audio"</a>. The conversion from the [=track set=] to the sequence is [=User Agent=] defined
-              and the order does not have to be stable between calls.</p>
+              <p>{{MediaStreamTrack}}のシーケンスを返します。オブジェクトは、このストリームのオーディオトラックを表します。</p>
+              <p>{{getAudioTracks}} メソッドは、このストリームの [=track set=] にある {{MediaStreamTrack/[[Kind]]}} が
+              <a>"audio"</a> に等しいすべての {{MediaStreamTrack}} オブジェクトのスナップショットを表すシーケンスを返さなければなりません (MUST)。
+              [= track set=]からシーケンスへの変換は[=User Agent=]で定義され、呼び出し間で順序が安定している必要はありません。</p>
             </dd>
             <dt><dfn>getVideoTracks()</dfn></dt>
             <dd>
-              <p>Returns a sequence of {{MediaStreamTrack}}
-              objects representing the video tracks in this stream.</p>
-              <p>The {{getVideoTracks}}
-              method MUST return a sequence that represents a snapshot of all
-              the {{MediaStreamTrack}} objects in this stream's
-              [=track set=] whose {{MediaStreamTrack/[[Kind]]}} is equal to
-              <a>"video"</a>. The conversion from the
-              [=track set=] to the sequence is [=User Agent=] defined
-              and the order does not have to be stable between calls.</p>
+              <p>{{MediaStreamTrack}}のシーケンスを返します。オブジェクトは、このストリームのビデオトラックを表します。</p>
+              <p>{{getVideoTracks}} メソッドは、このストリームの [=track set=] にある {{MediaStreamTrack/[[Kind]]}} が <a>"video"</a> に等しい
+              すべての {{MediaStreamTrack}} オブジェクトのスナップショットを表すシーケンスを返さなければなりません（MUST）。
+              [[=track set=]からシーケンスへの変換は[=User Agent=]で定義され、呼び出し間で順序が安定している必要はありません。</p>
             </dd>
             <dt><dfn>getTracks()</dfn></dt>
             <dd>
-              <p>Returns a sequence of {{MediaStreamTrack}}
-              objects representing all the tracks in this stream.</p>
-              <p>The {{getTracks}} method
-              MUST return a sequence that represents a snapshot of all the
-              {{MediaStreamTrack}} objects in this stream's
-              [=track set=], regardless of {{MediaStreamTrack/[[Kind]]}}. The
-              conversion from the [=track set=] to the sequence is User
-              Agent defined and the order does not have to be stable between
-              calls.</p>
+              <p>このストリームに含まれるすべてのトラックを表す {{MediaStreamTrack}} オブジェクトのシーケンスを返します。</p>
+              <p>{{getTracks}} メソッドは {{MediaStreamTrack/[[Kind]]}} に関係なく、このストリームの [=track set=] にある
+              すべての {{MediaStreamTrack}} オブジェクトのスナップショットを表すシーケンスを返さなければなりません (MUST)。
+              [=track set=]からシーケンスへの変換はユーザーエージェントが定義し、呼び出し間で順序が安定する必要はありません。</p>
             </dd>
             <dt><dfn>getTrackById()</dfn></dt>
             <dd>
-              <p>The {{getTrackById}}
-              method MUST return either a {{MediaStreamTrack}}
-              object from this stream's [=track set=]
-              whose {{MediaStreamTrack/[[Id]]}} is
-              equal to <var>trackId</var>, or <code>null</code>, if no such track
-              exists.</p>
+              <p>{{getTrackById}} メソッドは、このストリームの [=track set=] から {{MediaStreamTrack/[[Id]]}} が
+              <var>trackId</var>と等しい {{MediaStreamTrack}} オブジェクト、またはそのようなトラックが存在しない場合は <code>null</code> を
+              返さなければなりません (必須)。</p>
             </dd>
             <dt><dfn>addTrack()</dfn></dt>
             <dd>
-              <p>Adds the given {{MediaStreamTrack}} to this
-              {{MediaStream}}.</p>
-              <p>When the {{addTrack}} method is
-              invoked, the [=User Agent=] MUST run the following steps:</p>
+              <p>与えられた {{MediaStreamTrack}} をこの {{MediaStream}} に追加します。</p>
+              <p>{{addTrack}} メソッドが呼び出されると、[=User Agent=] は次のステップを実行しなければなりません。</p>
               <ol>
                 <li>
-                  <p>Let <var>track</var> be the methods argument and
-                  <var>stream</var> the {{MediaStream}} object
-                  on which the method was called.</p>
+                  <p><var>track</var>をメソッドの引数、<var>stream</var>をメソッドが呼び出された{{MediaStream}}オブジェクトとします。</p>
                 </li>
                 <li>
-                  <p>If <var>track</var> is already in <var>stream</var>'s
-                  [=track set=], then abort these
-                  steps.</p>
+                  <p><var>track</var> が <var>stream</var> の [=track set=] にすでにある場合は、この手順を中断します。</p>
                 </li>
                 <li>
-                  <p>[=MediaStream/Add a track|Add=] <var>track</var> to <var>stream</var>'s [=track set=].</p>
+                  <p><var>stream</var> の [=track set=] に  トラックを[=MediaStream/Add a track|追加=]します。</p>
                 </li>
               </ol>
             </dd>
             <dt><dfn>removeTrack()</dfn></dt>
             <dd>
-              <p>Removes the given {{MediaStreamTrack}} object
-              from this {{MediaStream}}.</p>
-              <p>When the {{removeTrack}}
-              method is invoked, the [=User Agent=] MUST run the following
-              steps:</p>
+              <p>指定された {{MediaStreamTrack}} オブジェクトをこの {{MediaStream}} から削除します。</p>
+              <p> {{removeTrack}} メソッドが呼び出されたとき、[=User Agent=] は次のステップを実行しなければなりません。</p>
               <ol>
                 <li>
-                  <p>Let <var>track</var> be the methods argument and
-                  <var>stream</var> the {{MediaStream}} object
-                  on which the method was called.</p>
+                  <p><var>track</var> をメソッドの引数、<var>stream</var> をメソッドが呼び出された{{MediaStream}}オブジェクトとします。</p>
                 </li>
                 <li>
-                  <p>If <var>track</var> is not in <var>stream's</var> [=track set=], then abort these steps.</p>
+                  <p><var>track</var> がストリームの [=track set=] にない場合は、この手順を中止します。</p>
                 </li>
                 <li>
-                  <p>[=MediaStream/Remove a track|Remove=] <var>track</var> from <var>stream</var>'s [=track set=].</p>
+                  <p>[=MediaStream/Remove a track|Remove=] <var>stream</var> の [=track set=] から <var>track</var> を削除します。</p>
                 </li>
               </ol>
             </dd>
             <dt><dfn>clone()</dfn></dt>
             <dd>
-              <p>Clones the given {{MediaStream}} and all its
-              tracks.</p>
-              <p>When the {{clone()}} method is invoked, the User
-              Agent MUST run the following steps:</p>
+              <p>指定された {{MediaStream}} とその全トラックを複製します。</p>
+              <p>{{clone()}} メソッドが呼び出されたとき、[=User Agent=] は次のステップを実行しなければなりません。</p>
               <ol>
                 <li>
-                  <p>Let <var>streamClone</var> be a newly constructed
-                  {{MediaStream}} object.</p>
+                  <p><var>streamClone</var> を新しく構築された{{MediaStream}}オブジェクトとする。</p>
                 </li>
                 <li>
-                  <p>Initialize <var>streamClone</var>.{{MediaStream.id}} to a newly
-                  generated value.</p>
+                  <p><var>streamClone</var>.{{MediaStream.id}} を新しく生成した値に初期化します。</p>
                 </li>
                 <li>
-                  <p><a href="#track-clone">Clone each track</a> in this
-                  {{MediaStream}} object and add the result to
-                  <var>streamClone</var>'s <a>track
-                  set</a>.</p>
+                  <p>この {{MediaStream}} オブジェクトの <a href="#track-clone">各トラックをクローン</a> して、
+                  結果を <var>streamClone</var> の <a>track set</a> に追加します。</p>
                 </li>
-                <li>Return <var>streamClone</var>.</li>
+                <li><var>streamClone</var> を返します。</li>
               </ol>
             </dd>
           </dl>
