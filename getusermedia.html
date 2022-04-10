@@ -402,85 +402,68 @@ interface MediaStream : EventTarget {
     </section>
     <section>
       <h2>{{MediaStreamTrack}}</h2>
-      <p>A {{MediaStreamTrack}} object represents a media
-      source in the [=User Agent=]. An example source is a device connected to the
-      [=User Agent=]. Other specifications may define sources for
-      {{MediaStreamTrack}} that override the behavior specified
-      here. Several {{MediaStreamTrack}} objects can represent
-      the same media source, e.g., when the user chooses the same camera in the
-      UI shown by two consecutive calls to {{MediaDevices/getUserMedia()}}.</p>
-      <p>The data from a {{MediaStreamTrack}} object does not
-      necessarily have a canonical binary form; for example, it could just be
-      "the video currently coming from the user's video camera". This allows
-      [=User Agents=] to manipulate media in whatever fashion is most suitable on
-      the user's platform.</p>
-      <p>A script can indicate that a {{MediaStreamTrack}}
-      object no longer needs its source with the {{MediaStreamTrack/stop()}}
-      method. When all tracks
-      using a source have been stopped or ended by some other means, the source
-      is <dfn id="source-stopped" data-lt="source stopped state">stopped</dfn>. If the source is a device
-      exposed by {{MediaDevices/getUserMedia()}}, then when
-      the source is stopped, the UA MUST run the following steps:</p>
+      <p>{{MediaStreamTrack}} オブジェクトは、[=User Agent=] 内のメディアソースを表します。
+      ソースの例としては、[=User Agent=] に接続されたデバイスが挙げられます。他の仕様
+      では、ここで指定された動作を上書きする {{MediaStreamTrack}} のソースを定義している場合があります。
+      複数の {{MediaStreamTrack}} オブジェクトが同じメディアソースを表すことができます。例えば、{{MediaDevices/getUserMedia()}}
+      の連続した2回の呼び出しによって示されるUIでユーザが同じカメラを選択した場合などです。</p>
+      <p>{{MediaStreamTrack}} オブジェクトのデータは、必ずしも正規のバイナリ形式である必要
+      はありません。例えば、「ユーザーのビデオカメラから現在送られてきているビデオ」というだけで
+      よいのです。これにより、[=User Agents=] は、ユーザーのプラットフォームで最も適した方法でメディアを操作することができます。</p>
+      <p>スクリプトは {{MediaStreamTrack}} オブジェクトがそのソースを必要としなくなったことを
+      {{MediaStreamTrack/stop()}} メソッドで示すことができます。ソースを使用しているすべてのトラックが
+      停止されるか、他の手段で終了すると、ソースは<dfn id="source-stopped" data-lt="source stopped state|stopped">停止</dfn> されます。
+      ソースが {{MediaDevices/getUserMedia()}} によって公開されたデバイスである場合、ソースが停止されると、UAは次のステップを実行しなければなりません（MUST）。</p>
       <ol>
         <li>
-          <p>Let <var>deviceId</var> be the device's {{MediaDeviceInfo/deviceId}}.</p>
+          <p><var>deviceId</var> をデバイスの {{MediaDeviceInfo/deviceId}} とする。</p>
         </li>
         <li>
-          <p>Set {{MediaDevices/[[devicesLiveMap]]}}[<var>deviceId</var>] to
-          <code>false</code>.</p>
+          <p>{{MediaDevices/[[devicesLiveMap]]}}[<var>deviceId</var>] を <code>false</code> にする</p>
         </li>
         <li>
-          <p>If the [=permission state=]
-          of the permission associated with the device's kind and
-          <var>deviceId</var>, is not {{PermissionState/"granted"}}, then set
-          {{MediaDevices/[[devicesAccessibleMap]]}}[<var>deviceId</var>] to
-          <code>false</code>.</p>
+          <p>デバイスの種類と <var>deviceId</var> に関連付けられたパーミッションの[=permission state=]が
+          {{PermissionState/"granted"}}でない場合、{{MediaDevices/[[devicesAccessibleMap]]}}[<var>deviceId</var>]に <code>false</code> をセットします。</p>
         </li>
       </ol>
-      <p>To <dfn data-export>create a MediaStreamTrack</dfn> with an underlying
-      <var>source</var>, and an optional parameter <var>tieSourceToContext</var>,
-      whose value is <code>true</code> unless explicitly specified, run the
-      following steps:</p>
+      <p>基礎となる <var>source</var> と、オプションのパラメータ <var>tieSourceToContext</var> （その値は明示的に指定されない限り <var>true</var>）を使って
+      <dfn data-export data-lt="create a MediaStreamTrack">MediaStreamTrackを作成する</dfn> には、次の手順を実行します。</p>
       <ol>
         <li>
-          <p>Let <var>track</var> be a new {{MediaStreamTrack}} object with the
-          following internal slots:</p>
+          <p><var>track</var> を、以下の内部スロットを持つ新しい {{MediaStreamTrack}} オブジェクトとします。</p>
           <ul data-dfn-for="MediaStreamTrack">
             <li>
               <p><dfn>[[\Source]]</dfn>,
-              initialized to <var>source</var>.</p>
+              <var>source</var> に初期化されます。</p>
             </li>
             <li>
               <p><dfn>[[\Id]]</dfn>,
-              initialized to a newly generated unique identifier string. See
-              {{MediaStream.id}} attribute for guidelines on how to generate
-              such an identifier.</p>
+              新たに生成された一意な識別子文字列に初期化されます。参照
+              {{MediaStream.id}} 属性は、このような識別子を生成するためのガイドラインを示します。</p>
             </li>
             <li>
               <p><dfn>[[\Kind]]</dfn>,
-              initialized to <dfn><code>"audio"</code></dfn> if <var>source</var> is
-              an audio source, or <dfn><code>"video"</code></dfn> if
-              <var>source</var> is a video source.</p>
+              <var>source</var> が 音声ソースであれば <dfn><code>"audio"</code></dfn> に初期化され、動画ソースであれば
+              <dfn><code>"video"</code></dfn> に初期化されます。
             </li>
             <li>
               <p><dfn>[[\Label]]</dfn>,
-              initialized to <var>source</var>'s label, if provided by the User
-              Agent, or <code>""</code> otherwise. [=User Agents=] MAY label audio and
-              video sources (e.g., "Internal microphone" or "External USB Webcam").
+              ユーザーエージェントから提供された場合は <var>source</var> のラベルに、そうでない場合は <code>""</code> に初期化されます。
+              [=User Agents=]は、オーディオとビデオソースにラベルを付けてもよい（例："内蔵マイク"、"外部USBウェブカメラ"）。
               </p>
             </li>
             <li>
               <p><dfn>[[\ReadyState]]</dfn>,
-              initialized to {{MediaStreamTrackState/"live"}}.</p>
+              {{MediaStreamTrackState/"live"}} に初期化されます。</p>
             </li>
             <li>
               <p><dfn>[[\Enabled]]</dfn>,
-              initialized to <code>true</code>.</p>
+              <code>true</code> に初期化されます。</p>
             </li>
             <li>
               <p><dfn>[[\Muted]]</dfn>,
-              initialized to <code>true</code> if <var>source</var> is
-              [= muted =], and <code>false</code> otherwise.</p>
+              <var>source</var> が [= muted =] の場合は <code>true</code> に初期化され、それ以外場合は
+              <var>false</var> に初期化されます。
             </li>
             <li>
               <a data-link-for="constrainable object"
@@ -488,88 +471,70 @@ interface MediaStream : EventTarget {
               <a data-link-for="constrainable object"
                  data-link-type="attribute">[[\Constraints]]</a>, and
               <a data-link-for="constrainable object"
-                 data-link-type="attribute">[[\Settings]]</a>, all initialized as
-              specified in the {{ConstrainablePattern}}.</p>
+                 data-link-type="attribute">[[\Settings]]</a>, はすべて
+                 {{ConstrainablePattern}}で指定されたとおりに初期化されます。</p>
             </li>
           </ul>
         </li>
         <li>
-          <p>If <var>tieSourceToContext</var> is <code>true</code>,
-          [=tie track source to context=] with <var>source</var>.</p>
+          <p><var>tieSourceToContext</var></p> が <code>true</code> のならば [=tie track source to context=] を
+          <var>source</var> と関連付けます。</p>
         </li>
-        <li><p>Return <var>track</var>.</p></li>
+        <li><p><var>track</var> を返します。</p></li>
       </ol>
-      <p>To <dfn>tie track source to context</dfn> with <var>source</var>, run
-      the following steps:
+      <p><dfn>tie track source to context</dfn> を <var>source</var> に関連付けるために次のステップを実行します。
       <ol>
         <li>
-          <p>Let <var>globalObject</var> be the [=relevant global object=].</p>
+          <p><var>globalObject</var> を [=relevant global object=] とします</p>
         </li>
         <li>
-          <p>Add <var>source</var> to <var>globalObject</var>'s
-          {{MediaDevices/[[mediaStreamTrackSources]]}}.</p>
+          <p><var>source</var> を <var>globalObject</var> の {{MediaDevices/[[mediaStreamTrackSources]]}} に追加します</p>
         </li>
       </ol>
 
-      <p>To <dfn>stop all sources</dfn> of a [=global object=], named <var>globalObject</var>,
-      the [=User Agent=] MUST run the following steps:</p>
+      <p><var>globalObject</var> という名前の [=global object=] の <dfn data-lt="stop all sources">すべての source を停止</dfn> するために、
+      [=User Agent=] は次のステップを実行しなければなりません。</p>
       <ol>
-        <li><p>For each {{MediaStreamTrack}} object <var>track</var> whose
-        <a data-cite="!HTML/#concept-relevant-global">relevant global object</a> is <var>globalObject</var>,
-        set <var>track</var>'s {{MediaStreamTrack/[[ReadyState]]}} to
-        {{MediaStreamTrackState/"ended"}}.</p></li>
-        <li><p>For each <var>source</var> in <var>globalObject</var>'s {{MediaDevices/[[mediaStreamTrackSources]]}},
-        [= source/stopped | stop =] <var>source</var>.</p></li>
+        <li><p><a data-cite="!HTML/#concept-relevant-global">relevant global object</a> が <var>globalObject</var>
+        である{{MediaStreamTrack}}オブジェクトのトラックごとに、トラックの{{MediaStreamTrack/[[ReadyState]]}}
+        を{{MediaStreamTrackState/"ended"}}に設定します。</p></li>
+        <li><p><var>globalObject</var> の {{MediaDevices/[[mediaStreamTrackSources]]}} の <var>source</var> ごとに、<var>source</var> を[= source/stopped | 停止 =]します。</p></li>
       </ol>
-      <p>The [=User Agent=] MUST [=stop all sources=] of a <var>globalObject</var> in the following conditions:</p>
+      <p>[=User Agent=] は、次の条件で <var>globalObject</var> の [=stop all sources | すべてのsourceを停止 =] する必要があります。</p>
       <ol>
-        <li><p>If <var>globalObject</var> is a {{Window}} object and the [=unloading document cleanup steps=]
-        are executed for its [=associated document=].</p></li>
-        <li><p>If <var>globalObject</var> is a {{WorkerGlobalScope}} object and its
-        <a data-cite="!HTML/workers.html#dom-workerglobalscope-closing">closing</a> flag is set to true.</p></li>
+        <li><p><var>globalObject</var> が {{Window}} オブジェクトであり、[=unloading document cleanup steps =]が関連するドキュメントに対して実行される場合。</p></li>
+        <li>
+          <p><var>globalObject</var>が {{WorkerGlobalScope}} オブジェクトであり、その
+          <a data-cite="!HTML/workers.html#dom-workerglobalscope-closing">終了</a> フラグがtrueに設定されている場合。</p>
+        </li>
       </ol>
 
-      <p>An implementation may use a per-source reference count to keep track
-      of source usage, but the specifics are out of scope for this
-      specification.</p>
-      <p>To <dfn id="track-clone">clone a track</dfn> the [=User Agent=] MUST run
-      the following steps:</p>
+      <p>実装では、ソースごとの参照カウントを使用してソースの使用状況を追跡できますが、詳細はこの仕様の範囲外です。</p>
+      <p><dfn id="track-clone" data-lt="clone a track">track を複製</dfn> するために [=User Agent=] は次の手順を実行しなければなりません。</p>
       <ol>
         <li>
-          <p>Let <var>track</var> be the {{MediaStreamTrack}}
-          object to be cloned.</p>
+          <p>複製する {{MediaStreamTrack}} オブジェクトを <var>track</var> とします。</p>
         </li>
         <li>
-          <p>Let <var>source</var> be <var>track</var>'s
-          {{MediaStreamTrack/[[Source]]}}.</p>
+          <p><var>source</var> を <var>track</var> の {{MediaStreamTrack/[[Source]]}} とします。 </p>
         </li>
         <li>
-          <p>Let <var>trackClone</var> be the result of
-          [=create a MediaStreamTrack | creating a MediaStreamTrack=] with
-          <var>source</var> and the value <code>false</code>.
-          </p>
+          <p><var>trackClone</var> を、<var>source</var> と値が <var>false</var> の[=create a MediaStreamTrack | MediaStreamTrackを作成した =]結果とします。</p>
         </li>
         <li>
-          <p>Set <var>trackClone</var>'s {{MediaStreamTrack/[[ReadyState]]}} to
-            <var>track</var>'s {{MediaStreamTrack/[[ReadyState]]}} value.</p>
+          <p><var>trackClone</var> の {{MediaStreamTrack/[[ReadyState]]}} を <var>track</var> の {{MediaStreamTrack/[[ReadyState]]}} 値に設定します。 </p>
         </li>
         <li>
-          <p>Set <var>trackClone</var>'s
-          <a data-link-for="constrainable object"
-             data-link-type="attribute">[[\Capabilities]]</a> to a clone of
-          <var>track</var>'s
-          <a data-link-for="constrainable object"
-             data-link-type="attribute">[[\Capabilities]]</a>.</p>
+          <p><var>trackClone</var> の <a data-link-for="constrainable object" data-link-type="attribute">[[\Capabilities]]</a>
+          を <var>track</var> の <a data-link-for="constrainable object" data-link-type="attribute">[[\Capabilities]]</a> のクローンに設定します。</p>
         </li>
         <li>
-          <p>Set <var>trackClone</var>'s
-          <a data-link-for="constrainable object"
-             data-link-type="attribute">[[\Constraints]]</a> to a clone of
-          <var>track</var>'s
-          <a data-link-for="constrainable object"
-             data-link-type="attribute">[[\Constraints]]</a>.</p>
+          <p><var>trackClone</var> の <a data-link-for="constrainable object" data-link-type="attribute">[[\Constraints]]</a>
+          を <var>track</var> の <a data-link-for="constrainable object" data-link-type="attribute">[[\Constraints]]</a> のクローンに設定します</p>
         </li>
         <li>
+          <p><var>trackClone</var> の <a data-link-for="constrainable object" data-link-type="attribute">[[\Settings]]</a>
+          を <var>track</var> の <a data-link-for="constrainable object" data-link-type="attribute">[[\Settings]]</a> のクローンに設定します。</p>
           <p>Set <var>trackClone</var>'s
           <a data-link-for="constrainable object"
              data-link-type="attribute">[[\Settings]]</a> to a clone of
@@ -578,7 +543,7 @@ interface MediaStream : EventTarget {
              data-link-type="attribute">[[\Settings]]</a>.</p>
         </li>
         <li>
-          <p>Return <var>trackClone</var>.</p>
+          <p><var>trackClone</var> を返します。</p>
         </li>
       </ol>
       <section>
